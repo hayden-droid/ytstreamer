@@ -46,7 +46,14 @@ async function startStreamer() {
     } catch (err) {}
   }
   try {
-    streamerProcess = spawn(STREAMER);
+    if (STREAMER.includes("bash")) {
+      const scriptPath = STREAMER.split("bash ")[1];
+      streamerProcess = spawn("bash", [scriptPath]);
+    } else if (STREAMER.includes(".sh")) {
+      streamerProcess = spawn("bash", [STREAMER]);
+    } else {
+      streamerProcess = spawn(STREAMER);
+    }
   } catch (err) {
     console.error("Failed to start streamer:", err);
     return;
