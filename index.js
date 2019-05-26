@@ -1,10 +1,12 @@
 const fetch = require("node-fetch");
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
+const spawn = require("child_process").spawn;
 
 const CHANNEL_ID = process.env.CHANNEL_ID;
 const YT_API_KEY = process.env.YT_API_KEY;
 const STREAMER = process.env.STREAMER;
+const DEBUG = process.env.DEBUG;
 
 async function checkIfChannelIsLive(channelId) {
   try {
@@ -12,7 +14,9 @@ async function checkIfChannelIsLive(channelId) {
         https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&type=video&eventType=live&key=${YT_API_KEY}
         `);
     const json = await resp.json();
-    console.log(json);
+    if (DEBUG) {
+      console.log(json);
+    }
     const items = json.items;
     if (items.length > 0) {
       return true;
@@ -42,7 +46,7 @@ async function startStreamer() {
     } catch (err) {}
   }
   try {
-    streamerProcess = await exec(STREAMER);
+    streamerProcess = spawn(STREAMER);
   } catch (err) {
     console.error("Failed to start streamer:", err);
     return;
