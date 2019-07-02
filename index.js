@@ -40,7 +40,7 @@ async function checkIfChannelIsLive(channelId) {
     }
     return false;
   } catch (err) {
-    console.error(JSON.stringify(err));
+    console.log(JSON.stringify(err));
     return false;
   }
 }
@@ -85,11 +85,11 @@ async function startStreamer() {
       streamerProcess = null;
     });
   } catch (err) {
-    console.error("Failed to start streamer:", err);
+    console.log("Failed to start streamer:", err);
     return;
   }
   lastStart = Date.now();
-  console.info("Streamer started.");
+  console.log("Streamer started.");
 }
 
 function printUptime() {
@@ -115,13 +115,13 @@ async function loop() {
       isLive = await checkIfChannelIsLive(CHANNEL_ID);
       if (isLive) {
         if (!wasLive) {
-          console.info("YT stream is online.");
+          console.log("YT stream is online.");
           printUptime();
         }
         lastLive = Date.now();
       } else {
         if (wasLive) {
-          console.warn("YT stream is offline.");
+          console.log("YT stream is offline.");
           printUptime();
         }
       }
@@ -132,7 +132,7 @@ async function loop() {
         timeFromLastStart / 1000 > 1000 * 60 * STREAM_TIMEOUT &&
         timeFromLastLive / 1000 > 1000 * 60 * STREAM_TIMEOUT
       ) {
-        console.warn("Restarting streamer.");
+        console.log("Restarting streamer.");
         await startStreamer();
       }
     }
