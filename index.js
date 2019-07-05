@@ -126,11 +126,18 @@ async function loop() {
         }
       }
 
-      let timeFromLastLive = Date.now() - lastLive;
-      let timeFromLastStart = Date.now() - lastStart;
+      const streamTimeoutMs = 60 * STREAM_TIMEOUT;
+      let timeFromLastLive = (Date.now() - lastLive) / 1000;
+      let timeFromLastStart = (Date.now() - lastStart) / 1000;
+
+      if (!isLive) {
+        console.log(`Last live: ${lastLive} Last start: ${lastStart}`);
+        console.log(`Restarting in ${streamTimeoutMs - timeFromLastLive} s`);
+      }
+
       if (
-        timeFromLastStart / 1000 > 1000 * 60 * STREAM_TIMEOUT &&
-        timeFromLastLive / 1000 > 1000 * 60 * STREAM_TIMEOUT
+        timeFromLastStart > streamTimeoutMs &&
+        timeFromLastLive > streamTimeoutMs
       ) {
         console.log("Restarting streamer.");
         await startStreamer();
